@@ -48,7 +48,7 @@ func startEc2CredentialsServer(credsProvider aws.CredentialsProvider, region str
 
 	// used by AWS SDK to determine region
 	router.HandleFunc("/latest/dynamic/instance-identity/document", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, `{"region": "`+region+`"}`)
+		fmt.Fprintf(w, `{"region": "%s"}`, region)
 	})
 
 	router.HandleFunc("/latest/meta-data/iam/security-credentials/local-credentials", credsHandler(credsProvider))
