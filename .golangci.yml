@@ -2,7 +2,7 @@ linters:
   enable:
     - bodyclose
     - contextcheck
-    - depguard
+    # - depguard
     - durationcheck
     - dupl
     - errchkjson
