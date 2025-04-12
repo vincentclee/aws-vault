@@ -8,7 +8,7 @@ linters:
     - errchkjson
     - errname
     - exhaustive
-    - exportloopref
+    - copyloopvar
     - gofmt
     - goimports
     - makezero
