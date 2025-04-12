@@ -18,7 +18,7 @@ linters:
     - nilnil
     - noctx
     - prealloc
-    - revive
+    # - revive
     # - rowserrcheck
     - thelper
     - tparallel
