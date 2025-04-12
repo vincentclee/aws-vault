@@ -1,6 +1,6 @@
 module github.com/99designs/aws-vault/v7
 
-go 1.23
+go 1.24
 
 require (
 	github.com/99designs/keyring v1.2.2
