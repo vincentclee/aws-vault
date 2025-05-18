@@ -7,13 +7,12 @@ import (
   "github.com/aws/aws-sdk-go-v2/service/sts"
 )
 
-// stsEndpointResolver implements aws.EndpointResolverWithOptions
-type stsEndpointResolver struct {
+type customSTSResolver struct {
   stsRegionalEndpoints string
 }
 
-func (r stsEndpointResolver) ResolveEndpoint(service, region string, options ...interface{}) (aws.Endpoint, error) {
-  if r.stsRegionalEndpoints == "legacy" && service == sts.ServiceID {
+func (r customSTSResolver) ResolveEndpoint(region string) (aws.Endpoint, error) {
+  if r.stsRegionalEndpoints == "legacy" {
     if region == "ap-northeast-1" ||
       region == "ap-south-1" ||
       region == "ap-southeast-1" ||
@@ -31,7 +30,6 @@ func (r stsEndpointResolver) ResolveEndpoint(service, region string, options ...
       region == "us-west-1" ||
       region == "us-west-2" {
       log.Println("Using legacy STS endpoint sts.amazonaws.com")
-
       return aws.Endpoint{
         URL:           "https://sts.amazonaws.com",
         SigningRegion: region,
@@ -42,7 +40,9 @@ func (r stsEndpointResolver) ResolveEndpoint(service, region string, options ...
   return aws.Endpoint{}, &aws.EndpointNotFoundError{}
 }
 
-// getSTSEndpointResolver returns a custom EndpointResolverWithOptions
-func getSTSEndpointResolver(stsRegionalEndpoints string) aws.EndpointResolverWithOptions {
-  return stsEndpointResolver{stsRegionalEndpoints}
+// getSTSClient sets a custom endpoint resolver on the STS client
+func getSTSClient(cfg aws.Config, stsRegionalEndpoints string) *sts.Client {
+  return sts.NewFromConfig(cfg, func(o *sts.Options) {
+    o.EndpointResolverV2 = customSTSResolver{stsRegionalEndpoints}
+  })
 }
