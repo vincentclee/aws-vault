@@ -127,9 +127,11 @@ func (e *EcsServer) getRoleProvider(roleArn string) aws.CredentialsProvider {
 	} else {
 		cfg := vault.NewAwsConfigWithCredsProvider(e.baseCredsProvider, e.config.Region, e.config.STSRegionalEndpoints)
 		roleProvider := &vault.AssumeRoleProvider{
-			StsClient: sts.NewFromConfig(cfg),
-			RoleARN:   roleArn,
-			Duration:  e.config.AssumeRoleDuration,
+			StsClient: sts.NewFromConfig(cfg, func(o *sts.Options) {
+				o.EndpointResolverV2 = vault.GetSTSEndpointResolver(e.config.STSRegionalEndpoints)
+			}),
+			RoleARN:  roleArn,
+			Duration: e.config.AssumeRoleDuration,
 		}
 		roleProviderCache = aws.NewCredentialsCache(roleProvider)
 		e.cache.Store(roleArn, roleProviderCache)

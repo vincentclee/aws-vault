@@ -24,16 +24,24 @@ func init() {
 
 func NewAwsConfig(region, stsRegionalEndpoints string) aws.Config {
 	return aws.Config{
-		Region:                      region,
-		EndpointResolverWithOptions: getSTSEndpointResolver(stsRegionalEndpoints),
+		Region: region,
+		// The EndpointResolverWithOptions field is deprecated
+		// To use custom endpoint resolver, pass the EndpointResolverV2 directly to the service client:
+		// stsClient := sts.NewFromConfig(cfg, func(o *sts.Options) {
+		//    o.EndpointResolverV2 = getSTSEndpointResolver(stsRegionalEndpoints)
+		// })
 	}
 }
 
 func NewAwsConfigWithCredsProvider(credsProvider aws.CredentialsProvider, region, stsRegionalEndpoints string) aws.Config {
 	return aws.Config{
-		Region:                      region,
-		Credentials:                 credsProvider,
-		EndpointResolverWithOptions: getSTSEndpointResolver(stsRegionalEndpoints),
+		Region:      region,
+		Credentials: credsProvider,
+		// The EndpointResolverWithOptions field is deprecated
+		// To use custom endpoint resolver, pass the EndpointResolverV2 directly to the service client:
+		// stsClient := sts.NewFromConfig(cfg, func(o *sts.Options) {
+		//    o.EndpointResolverV2 = getSTSEndpointResolver(stsRegionalEndpoints)
+		// })
 	}
 }
 
@@ -55,9 +63,11 @@ func NewSessionTokenProvider(credsProvider aws.CredentialsProvider, k keyring.Ke
 	cfg := NewAwsConfigWithCredsProvider(credsProvider, config.Region, config.STSRegionalEndpoints)
 
 	sessionTokenProvider := &SessionTokenProvider{
-		StsClient: sts.NewFromConfig(cfg),
-		Duration:  config.GetSessionTokenDuration(),
-		Mfa:       NewMfa(config),
+		StsClient: sts.NewFromConfig(cfg, func(o *sts.Options) {
+			o.EndpointResolverV2 = getSTSEndpointResolver(config.STSRegionalEndpoints)
+		}),
+		Duration: config.GetSessionTokenDuration(),
+		Mfa:      NewMfa(config),
 	}
 
 	if useSessionCache {
@@ -81,7 +91,9 @@ func NewAssumeRoleProvider(credsProvider aws.CredentialsProvider, k keyring.Keyr
 	cfg := NewAwsConfigWithCredsProvider(credsProvider, config.Region, config.STSRegionalEndpoints)
 
 	p := &AssumeRoleProvider{
-		StsClient:         sts.NewFromConfig(cfg),
+		StsClient: sts.NewFromConfig(cfg, func(o *sts.Options) {
+			o.EndpointResolverV2 = getSTSEndpointResolver(config.STSRegionalEndpoints)
+		}),
 		RoleARN:           config.RoleARN,
 		RoleSessionName:   config.RoleSessionName,
 		ExternalID:        config.ExternalID,
@@ -114,7 +126,9 @@ func NewAssumeRoleWithWebIdentityProvider(k keyring.Keyring, config *ProfileConf
 	cfg := NewAwsConfig(config.Region, config.STSRegionalEndpoints)
 
 	p := &AssumeRoleWithWebIdentityProvider{
-		StsClient:               sts.NewFromConfig(cfg),
+		StsClient: sts.NewFromConfig(cfg, func(o *sts.Options) {
+			o.EndpointResolverV2 = getSTSEndpointResolver(config.STSRegionalEndpoints)
+		}),
 		RoleARN:                 config.RoleARN,
 		RoleSessionName:         config.RoleSessionName,
 		WebIdentityTokenFile:    config.WebIdentityTokenFile,
@@ -199,9 +213,11 @@ func NewFederationTokenProvider(ctx context.Context, credsProvider aws.Credentia
 
 	log.Printf("Using GetFederationToken for credentials")
 	return &FederationTokenProvider{
-		StsClient: sts.NewFromConfig(cfg),
-		Name:      name,
-		Duration:  config.GetFederationTokenDuration,
+		StsClient: sts.NewFromConfig(cfg, func(o *sts.Options) {
+			o.EndpointResolverV2 = getSTSEndpointResolver(config.STSRegionalEndpoints)
+		}),
+		Name:     name,
+		Duration: config.GetFederationTokenDuration,
 	}, nil
 }
 
@@ -352,4 +368,59 @@ func NewTempCredentialsProvider(config *ProfileConfig, keyring *CredentialKeyrin
 		DisableCache:    disableCache,
 	}
 	return t.GetProviderForProfile(config)
+}
+
+func NewSession(k *CredentialKeyring, sk *SessionKeyring, config *ProfileConfig, opts ...func(*SessionOptions)) (*Session, error) {
+	pathToRole := config.PathToRole
+	if pathToRole == "" {
+		pathToRole = "/"
+	}
+
+	expiryWindow := config.GetRoleDuration()
+	if expiryWindow == 0 {
+		expiryWindow = 15 * time.Minute
+	}
+
+	expiryWindowRatio := 0.9
+	if ew := os.Getenv("AWS_SESSION_EXPIRY_WINDOW_RATIO"); ew != "" {
+		if ratio, err := time.ParseDuration(ew); err == nil {
+			expiryWindowRatio = ratio.Seconds() / expiryWindow.Seconds()
+		}
+	}
+
+	expiryWindowJitter := 0.05
+	if ew := os.Getenv("AWS_SESSION_EXPIRY_WINDOW_JITTER"); ew != "" {
+		if jitter, err := time.ParseDuration(ew); err == nil {
+			expiryWindowJitter = jitter.Seconds() / expiryWindow.Seconds()
+		}
+	}
+
+	prompter := config.MfaPromptFunc
+	if prompter == nil {
+		prompter = DefaultMfaPromptFunc
+	}
+
+	tokenCode := config.MfaTokenFunc
+	if tokenCode == nil {
+		tokenCode = DefaultMfaTokenFunc
+	}
+
+	cfg := NewAwsConfigWithCredsProvider(sk, config.Region, config.STSRegionalEndpoints)
+
+	session := &Session{
+		Name:               config.Name,
+		PathToRole:         pathToRole,
+		Keyring:            sk,
+		ExpiryWindow:       expiryWindow,
+		MfaPromptFunc:      prompter,
+		MfaTokenFunc:       tokenCode,
+		ExpiryWindowRatio:  expiryWindowRatio,
+		ExpiryWindowJitter: expiryWindowJitter,
+		Config:             config,
+		StsClient: sts.NewFromConfig(cfg, func(o *sts.Options) {
+			o.EndpointResolverV2 = getSTSEndpointResolver(config.StsRegionalEndpoints)
+		}),
+	}
+
+	return session, nil
 }

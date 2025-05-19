@@ -207,7 +207,9 @@ func generateLoginURL(region string, path string) (string, string) {
 
 func isCallerIdentityAssumedRole(ctx context.Context, credsProvider aws.CredentialsProvider, config *vault.ProfileConfig) (bool, error) {
 	cfg := vault.NewAwsConfigWithCredsProvider(credsProvider, config.Region, config.STSRegionalEndpoints)
-	client := sts.NewFromConfig(cfg)
+	client := sts.NewFromConfig(cfg, func(o *sts.Options) {
+		o.EndpointResolverV2 = vault.GetSTSEndpointResolver(config.STSRegionalEndpoints)
+	})
 	id, err := client.GetCallerIdentity(ctx, nil)
 	if err != nil {
 		return false, err
