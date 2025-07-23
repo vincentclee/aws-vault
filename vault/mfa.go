@@ -8,8 +8,8 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/99designs/aws-vault/v7/prompt"
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/vincentclee/aws-vault/v7/prompt"
 )
 
 // Mfa contains options for an MFA device
