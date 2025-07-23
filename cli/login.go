@@ -17,7 +17,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/service/sts"
 	"github.com/skratchdot/open-golang/open"
 )
 
@@ -207,7 +206,7 @@ func generateLoginURL(region string, path string) (string, string) {
 
 func isCallerIdentityAssumedRole(ctx context.Context, credsProvider aws.CredentialsProvider, config *vault.ProfileConfig) (bool, error) {
 	cfg := vault.NewAwsConfigWithCredsProvider(credsProvider, config.Region, config.STSRegionalEndpoints)
-	client := sts.NewFromConfig(cfg)
+	client := vault.NewSTSClient(cfg, config.STSRegionalEndpoints)
 	id, err := client.GetCallerIdentity(ctx, nil)
 	if err != nil {
 		return false, err

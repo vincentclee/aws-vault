@@ -24,17 +24,21 @@ func init() {
 
 func NewAwsConfig(region, stsRegionalEndpoints string) aws.Config {
 	return aws.Config{
-		Region:                      region,
-		EndpointResolverWithOptions: getSTSEndpointResolver(stsRegionalEndpoints),
+		Region: region,
 	}
 }
 
 func NewAwsConfigWithCredsProvider(credsProvider aws.CredentialsProvider, region, stsRegionalEndpoints string) aws.Config {
 	return aws.Config{
-		Region:                      region,
-		Credentials:                 credsProvider,
-		EndpointResolverWithOptions: getSTSEndpointResolver(stsRegionalEndpoints),
+		Region:      region,
+		Credentials: credsProvider,
 	}
+}
+
+// NewSTSClient creates an STS client with proper endpoint configuration
+func NewSTSClient(cfg aws.Config, stsRegionalEndpoints string) *sts.Client {
+	stsOptions := getSTSClientOptions(stsRegionalEndpoints)
+	return sts.NewFromConfig(cfg, stsOptions...)
 }
 
 func FormatKeyForDisplay(k string) string {
@@ -55,7 +59,7 @@ func NewSessionTokenProvider(credsProvider aws.CredentialsProvider, k keyring.Ke
 	cfg := NewAwsConfigWithCredsProvider(credsProvider, config.Region, config.STSRegionalEndpoints)
 
 	sessionTokenProvider := &SessionTokenProvider{
-		StsClient: sts.NewFromConfig(cfg),
+		StsClient: NewSTSClient(cfg, config.STSRegionalEndpoints),
 		Duration:  config.GetSessionTokenDuration(),
 		Mfa:       NewMfa(config),
 	}
@@ -81,7 +85,7 @@ func NewAssumeRoleProvider(credsProvider aws.CredentialsProvider, k keyring.Keyr
 	cfg := NewAwsConfigWithCredsProvider(credsProvider, config.Region, config.STSRegionalEndpoints)
 
 	p := &AssumeRoleProvider{
-		StsClient:         sts.NewFromConfig(cfg),
+		StsClient:         NewSTSClient(cfg, config.STSRegionalEndpoints),
 		RoleARN:           config.RoleARN,
 		RoleSessionName:   config.RoleSessionName,
 		ExternalID:        config.ExternalID,
@@ -114,7 +118,7 @@ func NewAssumeRoleWithWebIdentityProvider(k keyring.Keyring, config *ProfileConf
 	cfg := NewAwsConfig(config.Region, config.STSRegionalEndpoints)
 
 	p := &AssumeRoleWithWebIdentityProvider{
-		StsClient:               sts.NewFromConfig(cfg),
+		StsClient:               NewSTSClient(cfg, config.STSRegionalEndpoints),
 		RoleARN:                 config.RoleARN,
 		RoleSessionName:         config.RoleSessionName,
 		WebIdentityTokenFile:    config.WebIdentityTokenFile,
@@ -199,7 +203,7 @@ func NewFederationTokenProvider(ctx context.Context, credsProvider aws.Credentia
 
 	log.Printf("Using GetFederationToken for credentials")
 	return &FederationTokenProvider{
-		StsClient: sts.NewFromConfig(cfg),
+		StsClient: NewSTSClient(cfg, config.STSRegionalEndpoints),
 		Name:      name,
 		Duration:  config.GetFederationTokenDuration,
 	}, nil
