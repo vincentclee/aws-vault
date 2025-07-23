@@ -7,8 +7,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/99designs/aws-vault/v7/vault"
 	"github.com/google/go-cmp/cmp"
+	"github.com/vincentclee/aws-vault/v7/vault"
 )
 
 // see http://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html

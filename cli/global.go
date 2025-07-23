@@ -7,11 +7,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/99designs/aws-vault/v7/prompt"
-	"github.com/99designs/aws-vault/v7/vault"
 	"github.com/99designs/keyring"
 	"github.com/alecthomas/kingpin/v2"
 	isatty "github.com/mattn/go-isatty"
+	"github.com/vincentclee/aws-vault/v7/prompt"
+	"github.com/vincentclee/aws-vault/v7/vault"
 	"golang.org/x/term"
 )
 

@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/99designs/aws-vault/v7/iso8601"
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/vincentclee/aws-vault/v7/iso8601"
 )
 
 const ec2CredentialsServerAddr = "127.0.0.1:9099"

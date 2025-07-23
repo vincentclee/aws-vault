@@ -1,4 +1,4 @@
-module github.com/99designs/aws-vault/v7
+module github.com/vincentclee/aws-vault/v7
 
 go 1.24
 

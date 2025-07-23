@@ -3,7 +3,7 @@ package vault_test
 import (
 	"testing"
 
-	"github.com/99designs/aws-vault/v7/vault"
+	"github.com/vincentclee/aws-vault/v7/vault"
 )
 
 func TestIsSessionKey(t *testing.T) {
