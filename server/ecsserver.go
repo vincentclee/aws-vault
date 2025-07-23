@@ -15,7 +15,6 @@ import (
 	"github.com/99designs/aws-vault/v7/iso8601"
 	"github.com/99designs/aws-vault/v7/vault"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/service/sts"
 )
 
 func writeErrorMessage(w http.ResponseWriter, msg string, statusCode int) {
@@ -127,7 +126,7 @@ func (e *EcsServer) getRoleProvider(roleArn string) aws.CredentialsProvider {
 	} else {
 		cfg := vault.NewAwsConfigWithCredsProvider(e.baseCredsProvider, e.config.Region, e.config.STSRegionalEndpoints)
 		roleProvider := &vault.AssumeRoleProvider{
-			StsClient: sts.NewFromConfig(cfg),
+			StsClient: vault.NewSTSClient(cfg, e.config.STSRegionalEndpoints),
 			RoleARN:   roleArn,
 			Duration:  e.config.AssumeRoleDuration,
 		}
