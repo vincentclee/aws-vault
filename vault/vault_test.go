@@ -4,8 +4,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/99designs/keyring"
 	"github.com/vincentclee/aws-vault/v7/vault"
+	"github.com/vincentclee/keyring/v2"
 )
 
 func TestUsageWebIdentityExample(t *testing.T) {

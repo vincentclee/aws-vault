@@ -3,7 +3,7 @@ package cli
 import (
 	"github.com/alecthomas/kingpin/v2"
 
-	"github.com/99designs/keyring"
+	"github.com/vincentclee/keyring/v2"
 )
 
 func ExampleExecCommand() {
