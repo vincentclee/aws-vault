@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/99designs/keyring"
 	ststypes "github.com/aws/aws-sdk-go-v2/service/sts/types"
+	"github.com/vincentclee/keyring/v2"
 )
 
 var sessionKeyPattern = regexp.MustCompile(`^(?P<type>[^,]+),(?P<profile>[^,]+),(?P<mfaSerial>[^,]*),(?P<expiration>[0-9]{1,})$`)

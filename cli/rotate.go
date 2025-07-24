@@ -6,11 +6,11 @@ import (
 	"log"
 	"time"
 
-	"github.com/99designs/keyring"
 	"github.com/alecthomas/kingpin/v2"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/iam"
 	"github.com/vincentclee/aws-vault/v7/vault"
+	"github.com/vincentclee/keyring/v2"
 )
 
 type RotateCommandInput struct {

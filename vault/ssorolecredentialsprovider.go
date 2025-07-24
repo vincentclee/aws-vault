@@ -9,7 +9,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/99designs/keyring"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awshttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
 	"github.com/aws/aws-sdk-go-v2/service/sso"
@@ -18,6 +17,7 @@ import (
 	ssooidctypes "github.com/aws/aws-sdk-go-v2/service/ssooidc/types"
 	ststypes "github.com/aws/aws-sdk-go-v2/service/sts/types"
 	"github.com/skratchdot/open-golang/open"
+	"github.com/vincentclee/keyring/v2"
 )
 
 type OIDCTokenCacher interface {

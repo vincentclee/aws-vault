@@ -7,9 +7,9 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/99designs/keyring"
 	"github.com/alecthomas/kingpin/v2"
 	"github.com/vincentclee/aws-vault/v7/vault"
+	"github.com/vincentclee/keyring/v2"
 )
 
 type ListCommandInput struct {
