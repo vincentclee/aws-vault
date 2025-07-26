@@ -10,8 +10,8 @@ import (
 
 	"github.com/alecthomas/kingpin/v2"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/vincentclee/aws-vault/v7/iso8601"
-	"github.com/vincentclee/aws-vault/v7/vault"
+	"github.com/vincentclee/aws-vault/v8/iso8601"
+	"github.com/vincentclee/aws-vault/v8/vault"
 	"github.com/vincentclee/keyring/v2"
 	ini "gopkg.in/ini.v1"
 )

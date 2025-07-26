@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/alecthomas/kingpin/v2"
-	"github.com/vincentclee/aws-vault/v7/cli"
+	"github.com/vincentclee/aws-vault/v8/cli"
 )
 
 // Version is provided at compile time
