@@ -13,8 +13,8 @@ import (
 	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/vincentclee/aws-vault/v7/iso8601"
-	"github.com/vincentclee/aws-vault/v7/vault"
+	"github.com/vincentclee/aws-vault/v8/iso8601"
+	"github.com/vincentclee/aws-vault/v8/vault"
 )
 
 func writeErrorMessage(w http.ResponseWriter, msg string, statusCode int) {

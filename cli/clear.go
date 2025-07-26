@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/alecthomas/kingpin/v2"
-	"github.com/vincentclee/aws-vault/v7/vault"
+	"github.com/vincentclee/aws-vault/v8/vault"
 	"github.com/vincentclee/keyring/v2"
 )
 
