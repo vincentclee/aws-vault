@@ -5,11 +5,11 @@ go 1.24
 require (
 	github.com/alecthomas/kingpin/v2 v2.4.0
 	github.com/aws/aws-sdk-go-v2 v1.38.1
-	github.com/aws/aws-sdk-go-v2/config v1.31.2
-	github.com/aws/aws-sdk-go-v2/credentials v1.18.6
+	github.com/aws/aws-sdk-go-v2/config v1.31.3
+	github.com/aws/aws-sdk-go-v2/credentials v1.18.7
 	github.com/aws/aws-sdk-go-v2/service/iam v1.47.1
 	github.com/aws/aws-sdk-go-v2/service/sso v1.28.2
-	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.33.2
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.34.0
 	github.com/aws/aws-sdk-go-v2/service/sts v1.38.0
 	github.com/google/go-cmp v0.7.0
 	github.com/mattn/go-isatty v0.0.20
