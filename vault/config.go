@@ -68,7 +68,7 @@ func createConfigFilesIfMissing() error {
 			log.Printf("Config file %s not created", file)
 			return err
 		}
-		newFile.Close()
+		_ = newFile.Close()
 		log.Printf("Config file %s created", file)
 	}
 	return nil
@@ -116,7 +116,7 @@ func (c *ConfigFile) parseFile() error {
 		InsensitiveKeys:     true,
 	}, c.Path)
 	if err != nil {
-		return fmt.Errorf("Error parsing config file %s: %w", c.Path, err)
+		return fmt.Errorf("error parsing config file %s: %w", c.Path, err)
 	}
 	c.iniFile = f
 	return nil
@@ -241,7 +241,7 @@ func (c *ConfigFile) Save() error {
 // Add the profile to the configuration file
 func (c *ConfigFile) Add(profile ProfileSection) error {
 	if c.iniFile == nil {
-		return errors.New("No iniFile to add to")
+		return errors.New("no iniFile to add to")
 	}
 	// default profile name has a slightly different section format
 	sectionName := "profile " + profile.Name
@@ -250,10 +250,10 @@ func (c *ConfigFile) Add(profile ProfileSection) error {
 	}
 	section, err := c.iniFile.NewSection(sectionName)
 	if err != nil {
-		return fmt.Errorf("Error creating section %q: %v", profile.Name, err)
+		return fmt.Errorf("error creating section %q: %v", profile.Name, err)
 	}
 	if err = section.ReflectFrom(&profile); err != nil {
-		return fmt.Errorf("Error mapping profile to ini file: %v", err)
+		return fmt.Errorf("error mapping profile to ini file: %v", err)
 	}
 	return c.Save()
 }
@@ -315,7 +315,7 @@ func (cl *ConfigLoader) populateFromDefaults(config *ProfileConfig) {
 
 func (cl *ConfigLoader) populateFromConfigFile(config *ProfileConfig, profileName string) error {
 	if !cl.visitProfile(profileName) {
-		return fmt.Errorf("Loop detected in config file for profile '%s'", profileName)
+		return fmt.Errorf("loop detected in config file for profile '%s'", profileName)
 	}
 
 	psection, ok := cl.File.ProfileSection(profileName)
@@ -393,7 +393,7 @@ func (cl *ConfigLoader) populateFromConfigFile(config *ProfileConfig, profileNam
 	if sessionTags := psection.SessionTags; sessionTags != "" && config.SessionTags == nil {
 		err := config.SetSessionTags(sessionTags)
 		if err != nil {
-			return fmt.Errorf("Failed to parse session_tags profile setting: %s", err)
+			return fmt.Errorf("failed to parse session_tags profile setting: %s", err)
 		}
 	}
 	if transitiveSessionTags := psection.TransitiveSessionTags; transitiveSessionTags != "" && config.TransitiveSessionTags == nil {

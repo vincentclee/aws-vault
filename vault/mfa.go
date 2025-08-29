@@ -1,6 +1,7 @@
 package vault
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -25,7 +26,7 @@ func (m Mfa) GetMfaToken() (*string, error) {
 		return aws.String(token), err
 	}
 
-	return nil, errors.New("No prompt found")
+	return nil, errors.New("no prompt found")
 }
 
 func NewMfa(config *ProfileConfig) Mfa {
@@ -47,7 +48,7 @@ func NewMfa(config *ProfileConfig) Mfa {
 }
 
 func ProcessMfaProvider(processCmd string) (string, error) {
-	cmd := exec.Command("/bin/sh", "-c", processCmd)
+	cmd := exec.CommandContext(context.Background(), "/bin/sh", "-c", processCmd)
 	cmd.Stderr = os.Stderr
 
 	out, err := cmd.Output()

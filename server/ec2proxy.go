@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
@@ -29,7 +30,8 @@ func StartProxy() error {
 		return fmt.Errorf("%s: %s", strings.TrimSpace(string(output)), err.Error())
 	}
 
-	l, err := net.Listen("tcp", ec2MetadataEndpointAddr)
+	lc := &net.ListenConfig{}
+	l, err := lc.Listen(context.Background(), "tcp", ec2MetadataEndpointAddr)
 	if err != nil {
 		return err
 	}
@@ -46,7 +48,8 @@ func StartProxy() error {
 }
 
 func IsProxyRunning() bool {
-	_, err := net.DialTimeout("tcp", ec2MetadataEndpointAddr, time.Millisecond*10)
+	dialer := &net.Dialer{Timeout: time.Millisecond * 10}
+	_, err := dialer.DialContext(context.Background(), "tcp", ec2MetadataEndpointAddr)
 	return err == nil
 }
 

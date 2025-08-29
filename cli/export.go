@@ -92,22 +92,23 @@ func ExportCommand(input ExportCommandInput, f *vault.ConfigFile, keyring keyrin
 
 	config, err := vault.NewConfigLoader(input.Config, f, input.ProfileName).GetProfileConfig(input.ProfileName)
 	if err != nil {
-		return fmt.Errorf("Error loading config: %w", err)
+		return fmt.Errorf("error loading config: %w", err)
 	}
 
 	ckr := &vault.CredentialKeyring{Keyring: keyring}
 	credsProvider, err := vault.NewTempCredentialsProvider(config, ckr, input.NoSession, false)
 	if err != nil {
-		return fmt.Errorf("Error getting temporary credentials: %w", err)
+		return fmt.Errorf("error getting temporary credentials: %w", err)
 	}
 
-	if input.Format == FormatTypeExportJSON {
+	switch input.Format {
+	case FormatTypeExportJSON:
 		return printJSON(input, credsProvider)
-	} else if input.Format == FormatTypeExportINI {
+	case FormatTypeExportINI:
 		return printINI(credsProvider, input.ProfileName, config.Region)
-	} else if input.Format == FormatTypeExportEnv {
+	case FormatTypeExportEnv:
 		return printEnv(input, credsProvider, config.Region, "export ")
-	} else {
+	default:
 		return printEnv(input, credsProvider, config.Region, "")
 	}
 }
@@ -125,7 +126,7 @@ func printJSON(input ExportCommandInput, credsProvider aws.CredentialsProvider) 
 
 	creds, err := credsProvider.Retrieve(context.TODO())
 	if err != nil {
-		return fmt.Errorf("Failed to get credentials for %s: %w", input.ProfileName, err)
+		return fmt.Errorf("failed to get credentials for %s: %w", input.ProfileName, err)
 	}
 
 	credentialData := AwsCredentialHelperData{
@@ -141,7 +142,7 @@ func printJSON(input ExportCommandInput, credsProvider aws.CredentialsProvider) 
 
 	json, err := json.MarshalIndent(&credentialData, "", "  ")
 	if err != nil {
-		return fmt.Errorf("Error creating credential json: %w", err)
+		return fmt.Errorf("error creating credential json: %w", err)
 	}
 
 	fmt.Print(string(json) + "\n")
@@ -161,13 +162,13 @@ func mustNewKey(s *ini.Section, name, val string) {
 func printINI(credsProvider aws.CredentialsProvider, profilename, region string) error {
 	creds, err := credsProvider.Retrieve(context.TODO())
 	if err != nil {
-		return fmt.Errorf("Failed to get credentials for %s: %w", profilename, err)
+		return fmt.Errorf("failed to get credentials for %s: %w", profilename, err)
 	}
 
 	f := ini.Empty()
 	s, err := f.NewSection(profilename)
 	if err != nil {
-		return fmt.Errorf("Failed to create ini section: %w", err)
+		return fmt.Errorf("failed to create ini section: %w", err)
 	}
 
 	mustNewKey(s, "aws_access_key_id", creds.AccessKeyID)
@@ -180,7 +181,7 @@ func printINI(credsProvider aws.CredentialsProvider, profilename, region string)
 
 	_, err = f.WriteTo(os.Stdout)
 	if err != nil {
-		return fmt.Errorf("Failed to output ini: %w", err)
+		return fmt.Errorf("failed to output ini: %w", err)
 	}
 
 	return nil
@@ -189,7 +190,7 @@ func printINI(credsProvider aws.CredentialsProvider, profilename, region string)
 func printEnv(input ExportCommandInput, credsProvider aws.CredentialsProvider, region, prefix string) error {
 	creds, err := credsProvider.Retrieve(context.TODO())
 	if err != nil {
-		return fmt.Errorf("Failed to get credentials for %s: %w", input.ProfileName, err)
+		return fmt.Errorf("failed to get credentials for %s: %w", input.ProfileName, err)
 	}
 
 	fmt.Printf("%sAWS_ACCESS_KEY_ID=%s\n", prefix, creds.AccessKeyID)

@@ -3,12 +3,15 @@
 
 package server
 
-import "os/exec"
+import (
+	"context"
+	"os/exec"
+)
 
 func installEc2EndpointNetworkAlias() ([]byte, error) {
-	return exec.Command("ifconfig", "lo0", "alias", "169.254.169.254").CombinedOutput()
+	return exec.CommandContext(context.Background(), "ifconfig", "lo0", "alias", "169.254.169.254").CombinedOutput()
 }
 
 func removeEc2EndpointNetworkAlias() ([]byte, error) {
-	return exec.Command("ifconfig", "lo0", "-alias", "169.254.169.254").CombinedOutput()
+	return exec.CommandContext(context.Background(), "ifconfig", "lo0", "-alias", "169.254.169.254").CombinedOutput()
 }

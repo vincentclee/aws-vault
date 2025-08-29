@@ -127,12 +127,12 @@ func ListCommand(input ListCommandInput, awsConfigFile *vault.ConfigFile, keyrin
 
 	w := tabwriter.NewWriter(os.Stdout, 25, 4, 2, ' ', 0)
 
-	fmt.Fprintln(w, "Profile\tCredentials\tSessions\t")
-	fmt.Fprintln(w, "=======\t===========\t========\t")
+	_, _ = fmt.Fprintln(w, "Profile\tCredentials\tSessions\t")
+	_, _ = fmt.Fprintln(w, "=======\t===========\t========\t")
 
 	// list out known profiles first
 	for _, profileName := range awsConfigFile.ProfileNames() {
-		fmt.Fprintf(w, "%s\t", profileName)
+		_, _ = fmt.Fprintf(w, "%s\t", profileName)
 
 		hasCred, err := credentialKeyring.Has(profileName)
 		if err != nil {
@@ -140,9 +140,9 @@ func ListCommand(input ListCommandInput, awsConfigFile *vault.ConfigFile, keyrin
 		}
 
 		if hasCred {
-			fmt.Fprintf(w, "%s\t", profileName)
+			_, _ = fmt.Fprintf(w, "%s\t", profileName)
 		} else {
-			fmt.Fprintf(w, "-\t")
+			_, _ = fmt.Fprintf(w, "-\t")
 		}
 
 		var sessionLabels []string
@@ -162,9 +162,9 @@ func ListCommand(input ListCommandInput, awsConfigFile *vault.ConfigFile, keyrin
 		}
 
 		if len(sessionLabels) > 0 {
-			fmt.Fprintf(w, "%s\t\n", strings.Join(sessionLabels, ", "))
+			_, _ = fmt.Fprintf(w, "%s\t\n", strings.Join(sessionLabels, ", "))
 		} else {
-			fmt.Fprintf(w, "-\t\n")
+			_, _ = fmt.Fprintf(w, "-\t\n")
 		}
 
 		displayedSessionLabels = append(displayedSessionLabels, sessionLabels...)
@@ -174,14 +174,14 @@ func ListCommand(input ListCommandInput, awsConfigFile *vault.ConfigFile, keyrin
 	for _, credentialName := range credentialsNames {
 		_, ok := awsConfigFile.ProfileSection(credentialName)
 		if !ok {
-			fmt.Fprintf(w, "-\t%s\t-\t\n", credentialName)
+			_, _ = fmt.Fprintf(w, "-\t%s\t-\t\n", credentialName)
 		}
 	}
 
 	// show sessions that don't have profiles
 	sessionsWithoutProfiles := stringslice(allSessionLabels).remove(displayedSessionLabels)
 	for _, s := range sessionsWithoutProfiles {
-		fmt.Fprintf(w, "-\t-\t%s\t\n", s)
+		_, _ = fmt.Fprintf(w, "-\t-\t%s\t\n", s)
 	}
 
 	return w.Flush()
