@@ -14,7 +14,7 @@ func TestUsageWebIdentityExample(t *testing.T) {
 role_arn = arn:aws:iam::33333333333:role/role2
 web_identity_token_process = oidccli raw
 `))
-	defer os.Remove(f)
+	defer func() { _ = os.Remove(f) }()
 	configFile, err := vault.LoadConfig(f)
 	if err != nil {
 		t.Fatal(err)
@@ -50,7 +50,7 @@ include_profile=my-shared-base-profile
 region=eu-west-1
 role_arn=arn:aws:iam::12345678901:role/allow-view-only-access-from-other-accounts
 `))
-	defer os.Remove(f)
+	defer func() { _ = os.Remove(f) }()
 	configFile, err := vault.LoadConfig(f)
 	if err != nil {
 		t.Fatal(err)
@@ -98,7 +98,7 @@ sso_start_url=https://xxxx.awsapps.com/start
 sso_region=ap-northeast-2
 sso_registration_scopes=sso:account:access
 `))
-	defer os.Remove(f)
+	defer func() { _ = os.Remove(f) }()
 	configFile, err := vault.LoadConfig(f)
 	if err != nil {
 		t.Fatal(err)

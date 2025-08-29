@@ -66,7 +66,8 @@ type EcsServer struct {
 }
 
 func NewEcsServer(ctx context.Context, baseCredsProvider aws.CredentialsProvider, config *vault.ProfileConfig, authToken string, port int, lazyLoadBaseCreds bool) (*EcsServer, error) {
-	listener, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", port))
+	lc := &net.ListenConfig{}
+	listener, err := lc.Listen(ctx, "tcp", fmt.Sprintf("127.0.0.1:%d", port))
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +79,7 @@ func NewEcsServer(ctx context.Context, baseCredsProvider aws.CredentialsProvider
 	if !lazyLoadBaseCreds {
 		_, err := credsCache.Retrieve(ctx)
 		if err != nil {
-			return nil, fmt.Errorf("Retrieving creds: %w", err)
+			return nil, fmt.Errorf("retrieving creds: %w", err)
 		}
 	}
 

@@ -12,9 +12,9 @@ func TerminalPrompt(message string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer tty.Close()
+	defer func() { _ = tty.Close() }()
 
-	fmt.Fprint(tty.Output(), message)
+	_, _ = fmt.Fprint(tty.Output(), message)
 
 	text, err := tty.ReadString()
 	if err != nil {
@@ -29,9 +29,9 @@ func TerminalSecretPrompt(message string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer tty.Close()
+	defer func() { _ = tty.Close() }()
 
-	fmt.Fprint(tty.Output(), message)
+	_, _ = fmt.Fprint(tty.Output(), message)
 
 	text, err := tty.ReadPassword()
 	if err != nil {

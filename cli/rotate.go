@@ -54,13 +54,13 @@ func RotateCommand(input RotateCommandInput, f *vault.ConfigFile, keyring keyrin
 	configLoader := vault.NewConfigLoader(input.Config, f, input.ProfileName)
 	config, err := configLoader.GetProfileConfig(input.ProfileName)
 	if err != nil {
-		return fmt.Errorf("Error loading config: %w", err)
+		return fmt.Errorf("error loading config: %w", err)
 	}
 
 	ckr := &vault.CredentialKeyring{Keyring: keyring}
 	masterCredentialsName, err := vault.FindMasterCredentialsNameFor(input.ProfileName, ckr, config)
 	if err != nil {
-		return fmt.Errorf("Error determining credential name for '%s': %w", input.ProfileName, err)
+		return fmt.Errorf("error determining credential name for '%s': %w", input.ProfileName, err)
 	}
 
 	if input.NoSession {
@@ -72,7 +72,7 @@ func RotateCommand(input RotateCommandInput, f *vault.ConfigFile, keyring keyrin
 	// Get the existing credentials access key ID
 	oldMasterCreds, err := vault.NewMasterCredentialsProvider(ckr, masterCredentialsName).Retrieve(context.TODO())
 	if err != nil {
-		return fmt.Errorf("Error loading source credentials for '%s': %w", masterCredentialsName, err)
+		return fmt.Errorf("error loading source credentials for '%s': %w", masterCredentialsName, err)
 	}
 	oldMasterCredsAccessKeyID := vault.FormatKeyForDisplay(oldMasterCreds.AccessKeyID)
 	log.Printf("Rotating access key %s\n", oldMasterCredsAccessKeyID)
@@ -87,7 +87,7 @@ func RotateCommand(input RotateCommandInput, f *vault.ConfigFile, keyring keyrin
 		// Can't always disable sessions completely, might need to use session for MFA-Protected API Access
 		credsProvider, err = vault.NewTempCredentialsProvider(config, ckr, input.NoSession, true)
 		if err != nil {
-			return fmt.Errorf("Error getting temporary credentials: %w", err)
+			return fmt.Errorf("error getting temporary credentials: %w", err)
 		}
 	}
 
@@ -105,7 +105,7 @@ func RotateCommand(input RotateCommandInput, f *vault.ConfigFile, keyring keyrin
 		UserName: iamUserName,
 	})
 	if err != nil {
-		return fmt.Errorf("Error creating a new access key: %w", err)
+		return fmt.Errorf("error creating a new access key: %w", err)
 	}
 	fmt.Printf("Created new access key %s\n", vault.FormatKeyForDisplay(*createOut.AccessKey.AccessKeyId))
 
@@ -116,7 +116,7 @@ func RotateCommand(input RotateCommandInput, f *vault.ConfigFile, keyring keyrin
 
 	err = ckr.Set(masterCredentialsName, newMasterCreds)
 	if err != nil {
-		return fmt.Errorf("Error storing new access key %s: %w", vault.FormatKeyForDisplay(newMasterCreds.AccessKeyID), err)
+		return fmt.Errorf("error storing new access key %s: %w", vault.FormatKeyForDisplay(newMasterCreds.AccessKeyID), err)
 	}
 
 	// Delete old sessions
@@ -138,7 +138,7 @@ func RotateCommand(input RotateCommandInput, f *vault.ConfigFile, keyring keyrin
 		return err
 	})
 	if err != nil {
-		return fmt.Errorf("Can't delete old access key %s: %w", oldMasterCredsAccessKeyID, err)
+		return fmt.Errorf("can't delete old access key %s: %w", oldMasterCredsAccessKeyID, err)
 	}
 	fmt.Printf("Deleted old access key %s\n", oldMasterCredsAccessKeyID)
 
@@ -160,7 +160,7 @@ func retry(maxTime time.Duration, sleep time.Duration, f func() error) (err erro
 
 		elapsed := time.Since(t0)
 		if elapsed > maxTime {
-			return fmt.Errorf("After %d attempts, last error: %s", i, err)
+			return fmt.Errorf("after %d attempts, last error: %s", i, err)
 		}
 
 		time.Sleep(sleep)
@@ -172,7 +172,7 @@ func getUsernameIfAssumingRole(ctx context.Context, awsCfg aws.Config, config *v
 	if config.RoleARN != "" {
 		n, err := vault.GetUsernameFromSession(ctx, awsCfg)
 		if err != nil {
-			return nil, fmt.Errorf("Error getting IAM username from session: %w", err)
+			return nil, fmt.Errorf("error getting IAM username from session: %w", err)
 		}
 		log.Printf("Found IAM username '%s'", n)
 		return &n, nil

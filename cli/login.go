@@ -115,7 +115,7 @@ func getCredsProvider(input LoginCommandInput, config *vault.ProfileConfig, keyr
 func LoginCommand(ctx context.Context, input LoginCommandInput, f *vault.ConfigFile, keyring keyring.Keyring) error {
 	config, err := vault.NewConfigLoader(input.Config, f, input.ProfileName).GetProfileConfig(input.ProfileName)
 	if err != nil {
-		return fmt.Errorf("Error loading config: %w", err)
+		return fmt.Errorf("error loading config: %w", err)
 	}
 
 	credsProvider, err := getCredsProvider(input, config, keyring)
@@ -173,7 +173,7 @@ func LoginCommand(ctx context.Context, input LoginCommandInput, f *vault.ConfigF
 	if input.UseStdout {
 		fmt.Println(loginURL)
 	} else if err = open.Run(loginURL); err != nil {
-		return fmt.Errorf("Failed to open %s: %w", loginURL, err)
+		return fmt.Errorf("failed to open %s: %w", loginURL, err)
 	}
 
 	return nil
@@ -274,7 +274,7 @@ func requestSigninToken(ctx context.Context, creds aws.Credentials, loginURLPref
 		return "", err
 	}
 
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
@@ -282,7 +282,7 @@ func requestSigninToken(ctx context.Context, creds aws.Credentials, loginURLPref
 
 	if resp.StatusCode != http.StatusOK {
 		log.Printf("Response body was %s", body)
-		return "", fmt.Errorf("Call to getSigninToken failed with %v", resp.Status)
+		return "", fmt.Errorf("call to getSigninToken failed with %v", resp.Status)
 	}
 
 	var respParsed map[string]string
@@ -294,7 +294,7 @@ func requestSigninToken(ctx context.Context, creds aws.Credentials, loginURLPref
 
 	signinToken, ok := respParsed["SigninToken"]
 	if !ok {
-		return "", fmt.Errorf("Expected a response with SigninToken")
+		return "", fmt.Errorf("expected a response with SigninToken")
 	}
 
 	return signinToken, nil
