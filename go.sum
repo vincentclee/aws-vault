@@ -68,6 +68,8 @@ github.com/stretchr/testify v1.10.0 h1:Xv5erBjTwe/5IxqUQTdXv5kgmIvbHo3QQyRwhJsOf
 github.com/stretchr/testify v1.10.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
 github.com/vincentclee/keyring/v2 v2.0.1 h1:gSS1Qj9IAW2PcwXopaJMz/GEAUVuu0x47q/AmR8ZoQ4=
 github.com/vincentclee/keyring/v2 v2.0.1/go.mod h1:wGXxlaNV9keKgYpVl/SrB1UutbbZEukEagELxXV7r2o=
+github.com/vincentclee/keyring/v2 v2.1.0 h1:SKB6eCSQ8FpdEluZ+mf9VLmg2a/4TeX+LKFHFzwTeI4=
+github.com/vincentclee/keyring/v2 v2.1.0/go.mod h1:Nbq9nyALptPfadMguSGV/zUiksMFV2nW1vSuR7xQwP4=
 github.com/xhit/go-str2duration/v2 v2.1.0 h1:lxklc02Drh6ynqX+DdPyp5pCKLUQpRT8bp8Ydu2Bstc=
 github.com/xhit/go-str2duration/v2 v2.1.0/go.mod h1:ohY8p+0f07DiV6Em5LKB0s2YpLtXVyJfNt1+BlmyAsU=
 golang.org/x/sys v0.6.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
