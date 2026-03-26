@@ -10,7 +10,7 @@ type Func func(string) (string, error)
 var Methods = map[string]Func{}
 
 func Available() []string {
-	methods := []string{}
+	methods := make([]string, 0, len(Methods))
 	for k := range Methods {
 		methods = append(methods, k)
 	}
