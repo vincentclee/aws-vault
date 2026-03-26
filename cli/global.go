@@ -99,7 +99,7 @@ func ConfigureGlobals(app *kingpin.Application) *AwsVault {
 		KeyringConfig: keyringConfigDefaults,
 	}
 
-	backendsAvailable := []string{}
+	backendsAvailable := make([]string, 0, len(keyring.AvailableBackends()))
 	for _, backendType := range keyring.AvailableBackends() {
 		backendsAvailable = append(backendsAvailable, string(backendType))
 	}
