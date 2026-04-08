@@ -12,7 +12,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.17
 	github.com/aws/aws-sdk-go-v2/service/sts v1.41.9
 	github.com/google/go-cmp v0.7.0
-	github.com/mattn/go-isatty v0.0.20
+	github.com/mattn/go-isatty v0.0.21
 	github.com/mattn/go-tty v0.0.7
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/vincentclee/keyring/v2 v2.1.0
