@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mattn/go-tty"
+	"github.com/mattn/go-tty/v2"
 )
 
 func TerminalPrompt(message string) (string, error) {
